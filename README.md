@@ -4,8 +4,7 @@ Aplicación web de comercio electrónico con flujo completo: catálogo, carrito 
 
 ## Repositorio
 
-> **Enlace público:** https://github.com/rodrigohb/ecommerce-final  
-> *(actualizar con la URL real del repositorio)*
+> **Enlace público:** https://github.com/rmondacai/ecommerce-final 
 
 ## Tecnologías
 
@@ -64,7 +63,7 @@ Aplicación web de comercio electrónico con flujo completo: catálogo, carrito 
 
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/rodrigohb/ecommerce-final.git
+git clone https://github.com/rmondacai/ecommerce-final.git
 cd ecommerce_project
 
 # 2. Crear y activar entorno virtual
