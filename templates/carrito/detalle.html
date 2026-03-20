@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load catalogo_filters %}
+{% block title %}Mi Carrito{% endblock %}
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-cart3"></i> Mi Carrito</h1>
+
+{% if items %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Producto</th>
+                    <th class="text-end">Precio unit.</th>
+                    <th class="text-center" style="width: 180px;">Cantidad</th>
+                    <th class="text-end">Subtotal</th>
+                    <th class="text-center">Quitar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if item.producto.imagen_url %}
+                                    <img src="{{ item.producto.imagen_url }}" alt="{{ item.producto.nombre }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
+                                {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <a href="{% url 'catalogo:producto_detail' item.producto.pk %}" class="text-decoration-none fw-bold">{{ item.producto.nombre }}</a>
+                                    <br><small class="text-muted">{{ item.producto.categoria }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-end">{{ item.producto.precio|formato_clp }}</td>
+                        <td class="text-center">
+                            <form method="post" action="{% url 'carrito:actualizar' item.producto.id %}" class="d-flex justify-content-center gap-1">
+                                {% csrf_token %}
+                                <input type="number" name="cantidad" value="{{ item.cantidad }}" min="0" max="{{ item.producto.stock }}" class="form-control form-control-sm" style="width: 70px;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-repeat"></i></button>
+                            </form>
+                        </td>
+                        <td class="text-end fw-bold">{{ item.subtotal|formato_clp }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'carrito:quitar' item.producto.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-dark">
+                    <td colspan="3" class="text-end fw-bold fs-5">Total:</td>
+                    <td class="text-end fw-bold fs-5">{{ total|formato_clp }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between mt-3">
+        <a href="{% url 'catalogo:producto_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Seguir comprando
+        </a>
+        <a href="{% url 'ordenes:checkout' %}" class="btn btn-success btn-lg">
+            <i class="bi bi-bag-check"></i> Confirmar Compra
+        </a>
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+        <p class="fs-5 text-muted mt-3">Tu carrito está vacío.</p>
+        <a href="{% url 'catalogo:producto_list' %}" class="btn btn-primary mt-2">Ver catálogo</a>
+    </div>
+{% endif %}
+{% endblock %}

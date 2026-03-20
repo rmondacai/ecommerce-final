@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load catalogo_filters %}
+
+{% block title %}{{ producto.nombre }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'catalogo:producto_list' %}">Catálogo</a></li>
+        <li class="breadcrumb-item active">{{ producto.nombre }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-5">
+        {% if producto.imagen_url %}
+            <img src="{{ producto.imagen_url }}" class="img-fluid rounded shadow-sm" alt="{{ producto.nombre }}">
+        {% else %}
+            <div class="bg-light rounded d-flex align-items-center justify-content-center shadow-sm" style="height: 350px;">
+                <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-7">
+        <span class="badge bg-secondary mb-2">{{ producto.categoria }}</span>
+        <h1>{{ producto.nombre }}</h1>
+        <p class="text-muted">{{ producto.descripcion }}</p>
+        <p class="fs-3 fw-bold text-primary">{{ producto.precio|formato_clp }}</p>
+
+        <p class="{% if producto.stock > 0 %}text-success{% else %}text-danger{% endif %}">
+            {% if producto.stock > 0 %}
+                <i class="bi bi-check-circle"></i> En stock ({{ producto.stock }} disponibles)
+            {% else %}
+                <i class="bi bi-x-circle"></i> Sin stock
+            {% endif %}
+        </p>
+
+        {% if user.is_authenticated and producto.stock > 0 and producto.disponible %}
+            <form method="post" action="{% url 'carrito:agregar' producto.id %}" class="d-flex align-items-center gap-2 mb-3">
+                {% csrf_token %}
+                <label for="cantidad" class="form-label mb-0 fw-bold">Cantidad:</label>
+                <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="{{ producto.stock }}" class="form-control" style="width: 80px;">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                </button>
+            </form>
+        {% elif not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="btn btn-outline-primary mb-3">
+                <i class="bi bi-box-arrow-in-right"></i> Inicia sesión para comprar
+            </a>
+        {% endif %}
+
+        <div class="mt-3">
+            <a href="{% url 'catalogo:producto_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al catálogo
+            </a>
+            {% if user.is_staff %}
+                <a href="{% url 'catalogo:producto_update' producto.pk %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'catalogo:producto_delete' producto.pk %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Eliminar
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
